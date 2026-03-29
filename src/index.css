@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+
+
+@media print {
+  /* Hide the Subscription Alert and the padding it creates */
+  .no-print, 
+  [class*="SubscriptionWrapper"], 
+  .bg-orange-500, 
+  .fixed.top-0 {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Force the content to the top of the paper */
+  .pt-9 {
+    padding-top: 0 !important;
+  }
+
+  /* Reset the Layout wrappers that cause the 'cutting off' issue */
+  html, body, #root, .flex, main, section {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
