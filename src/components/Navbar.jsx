@@ -1,40 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { db, auth } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import React from 'react';
+import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, Menu } from 'lucide-react'; 
-import { toast } from 'react-toastify'; // Added toast import
+import { toast } from 'react-toastify';
 
 const Navbar = ({ onMenuClick }) => { 
-  const { user } = useAuth();
+  // Destructure dairyDetails from useAuth
+  const { user, dairyDetails } = useAuth();
   const navigate = useNavigate();
-  const [dairyName, setDairyName] = useState(""); 
 
   // Extract username from email before the @ sign
   const userName = user?.email ? user.email.split('@')[0] : "";
 
-  useEffect(() => {
-    const fetchDairyName = async () => {
-      if (!user?.uid) return;
-      try {
-        const docRef = doc(db, "dairyDetails", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setDairyName(docSnap.data().name);
-        }
-      } catch (error) {
-        toast.error("Error fetching dairy name");
-      }
-    };
-    fetchDairyName();
-  }, [user?.uid]);
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      // The AuthContext will automatically set user to null and loading to false
       toast.success("Signed out successfully");
       navigate('/login', { replace: true });
     } catch (error) {
@@ -67,7 +49,8 @@ const Navbar = ({ onMenuClick }) => {
 
               <div className="flex flex-col">
                 <h1 className="text-lg md:text-xl font-black uppercase tracking-tighter text-black leading-none">
-                  {dairyName || "Milk DAIRY"}
+                  {/* Using dairyDetails from AuthContext instead of local state */}
+                  {dairyDetails?.name || "Milk DAIRY"}
                 </h1>
                 <p className="text-[8px] md:text-[9px] font-bold text-blue-600 uppercase tracking-[0.2em] mt-1">
                   Management System
@@ -85,7 +68,6 @@ const Navbar = ({ onMenuClick }) => {
 
           {/* RIGHT SIDE: USERNAME & LOGOUT */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Displaying User Name from email */}
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 border-r border-gray-100 pr-4">
               {userName}
             </span>

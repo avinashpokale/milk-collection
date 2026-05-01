@@ -1,19 +1,28 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../firebase";
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Start as true
+  const [dairyDetails, setDairyDetails] = useState(null); // Added state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      // Don't flip loading back and forth. Just start the process.
       try {
         if (currentUser) {
+          // 1. Fetch Dairy Details (Added this section)
+          const dairyDocRef = doc(db, "dairyDetails", currentUser.uid);
+          const dairyDocSnap = await getDoc(dairyDocRef);
+          
+          if (dairyDocSnap.exists()) {
+            setDairyDetails(dairyDocSnap.data());
+          }
+
+          // 2. Existing Reader Permission Logic
           const q = query(
             collection(db, "dairyDetails"), 
             where("reader", "==", currentUser.uid)
@@ -34,11 +43,12 @@ export function AuthProvider({ children }) {
           }
         } else {
           setUser(null);
+          setDairyDetails(null);
         }
       } catch (error) {
         setUser(null);
+        setDairyDetails(null);
       } finally {
-        // ONLY set loading to false once EVERYTHING is done
         setLoading(false); 
       }
     });
@@ -46,8 +56,9 @@ export function AuthProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
+  // Added dairyDetails to the Provider value
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, dairyDetails, loading }}>
       {children}
     </AuthContext.Provider>
   );

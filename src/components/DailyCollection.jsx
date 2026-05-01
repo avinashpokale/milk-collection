@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import LoadingScreen from './LoadingScreen';
+import PrintReceipt from './PrintReceipt';
 
 const DailyCollection = () => {
   const { user } = useAuth();
@@ -56,6 +57,15 @@ const DailyCollection = () => {
     rate: 0,
     amount: 0
   });
+  const [printData, setPrintData] = useState(null);
+
+  const handlePrint = (data) => {
+    setPrintData(data);
+    setTimeout(() => {
+      window.print();
+      setPrintData(null); // Clear it after print dialog closes
+    }, 500);
+  };
 
   // 1. Initial Load: Customers, Rates, and Edit Data
   useEffect(() => {
@@ -245,12 +255,26 @@ const DailyCollection = () => {
         createdAt: formData.createdAt || serverTimestamp() 
       };
 
-      // 5. Perform the Actual Write
+     // 5. Perform the Actual Write
       await setDoc(docRef, finalData, { merge: true });
-      
       toast.success(id ? "Entry Updated" : "Entry Saved");
 
-      // 6. Reset Form & UI State
+      // --- UPDATED PRINT & NAVIGATION LOGIC ---
+      const confirmPrint = window.confirm("Print receipt?");
+      
+      if (confirmPrint) {
+        handlePrint({ ...finalData, customerName: selectedCustomer.name });
+        
+        // If editing, wait for print dialog to finish before navigating
+        if (id) {
+          setTimeout(() => {
+            navigate('/collection-list');
+          }, 2000); // Give enough time for the print handoff
+          return; // Stop here so it doesn't navigate immediately below
+        }
+      }
+
+      // 6. Reset Form (For New Entry) or Navigate (For Edit if print was cancelled)
       if (!id) {
         setFormData({ 
           ...formData, 
@@ -262,13 +286,10 @@ const DailyCollection = () => {
           amount: 0 
         });
         setIsDuplicate(false);
-        
-        // Clear the background timer if it's still running
         if (timerRef.current) clearTimeout(timerRef.current);
-        
-        // Focus back on Code for the next entry
         setTimeout(() => codeInputRef.current?.focus(), 100);
       } else {
+        // This only runs if they clicked 'Cancel' on the print prompt while editing
         navigate('/collection-list');
       }
 
@@ -396,7 +417,9 @@ const DailyCollection = () => {
           </div>
         </form>
       </div>
+      <PrintReceipt data={printData} />
     </div>
+    
   );
 };
 

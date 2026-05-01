@@ -3,10 +3,12 @@ import { db } from '../firebase';
 import { collection, query, where, getDocs, doc, deleteDoc, orderBy } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Edit2, Trash2, Search, AlertCircle, X, Loader2 } from 'lucide-react';
+import { Calendar, Edit2, Trash2, Search, AlertCircle, X, Loader2, Printer } from 'lucide-react';
 import { toast } from 'react-toastify';
+import PrintReceipt from './PrintReceipt';
 
 const CollectionList = () => {
+  const [printData, setPrintData] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -38,6 +40,13 @@ const CollectionList = () => {
     };
     fetchCustomers();
   }, [user?.uid]);
+
+  useEffect(() => {
+    if (printData) {
+      window.print();
+      setPrintData(null);
+    }
+  }, [printData]);
 
   // 2. Fetch Daily Collections (Uses swapped user.uid from AuthContext)
   useEffect(() => {
@@ -192,8 +201,8 @@ const CollectionList = () => {
               <tr>
                 <th className="p-1 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sr.No</th>
                 <th className="p-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Customer</th>
-                <th className="p-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">Quality</th>
                 <th className="p-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Quantity</th>
+                <th className="p-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">Quality</th>
                 <th className="p-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Amount</th>
                 <th className="p-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Actions</th>
               </tr>
@@ -245,16 +254,17 @@ const CollectionList = () => {
                           </div>
                         </div>
                       </td>
+                      <td className="p-6 text-sm font-bold text-gray-700">{item.qty} Ltr</td>
                       <td className="p-6 text-center">
                         <div className="inline-flex gap-1.5">
                           <span className="px-2 py-1 bg-orange-50 text-orange-600 rounded-lg text-[10px] font-black">F {item.fat}</span>
                           <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black">S {item.snf}</span>
                         </div>
                       </td>
-                      <td className="p-6 text-sm font-bold text-gray-700">{item.qty} Ltr</td>
                       <td className="p-6 text-sm font-black text-emerald-600">₹{item.amount}</td>
                       <td className="p-6 text-right">
                         <div className="flex justify-end gap-2">
+                          <button onClick={() => setPrintData({date: item.date,code:item.code, customerName: customer?.name,qty: item.qty,fat: item.fat,snf: item.snf,rate: item.rate,amount: item.amount})}><Printer size={15} /></button>
                           <button onClick={() => navigate(`/edit-collection/${item.id}`)} className="p-2 bg-white border border-gray-100 text-blue-500 hover:bg-blue-600 hover:text-white rounded-xl shadow-sm transition-all"><Edit2 size={15} /></button>
                           <button disabled={user?.isReadOnly} onClick={() => setDeleteId(item.id)} className="p-2 bg-white border border-gray-100 text-red-400 hover:bg-red-500 hover:text-white rounded-xl shadow-sm disabled:opacity-20 transition-all"><Trash2 size={15} /></button>
                         </div>
@@ -267,6 +277,7 @@ const CollectionList = () => {
           </table>
         </div>
       </div>
+      <PrintReceipt data={printData} />
     </div>
   );
 };
