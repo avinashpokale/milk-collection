@@ -25,6 +25,7 @@ import { toast } from 'react-toastify';
 import LoadingScreen from './LoadingScreen';
 import PrintReceipt from './PrintReceipt';
 
+
 const DailyCollection = () => {
   const { user } = useAuth();
   const { id } = useParams();

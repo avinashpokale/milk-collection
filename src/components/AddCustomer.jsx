@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { UserPlus, Save, ArrowLeft, Loader2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+
 import LoadingScreen from './LoadingScreen'
 
 const AddCustomer = () => {

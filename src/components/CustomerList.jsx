@@ -7,6 +7,7 @@ import { Edit2, Trash2, UserPlus, Search, User } from 'lucide-react';
 import { toast } from 'react-toastify';
 import LoadingScreen from './LoadingScreen';
 
+
 const CustomerList = () => {
   const { user } = useAuth();
   const navigate = useNavigate();

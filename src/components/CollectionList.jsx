@@ -7,6 +7,7 @@ import { Calendar, Edit2, Trash2, Search, AlertCircle, X, Loader2, Printer } fro
 import { toast } from 'react-toastify';
 import PrintReceipt from './PrintReceipt';
 
+
 const CollectionList = () => {
   const [printData, setPrintData] = useState(null);
   const { user } = useAuth();

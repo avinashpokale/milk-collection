@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, Menu } from 'lucide-react'; 
 import { toast } from 'react-toastify';
 
+
 const Navbar = ({ onMenuClick }) => { 
   // Destructure dairyDetails from useAuth
   const { user, dairyDetails } = useAuth();

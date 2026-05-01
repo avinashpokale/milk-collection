@@ -6,6 +6,7 @@ import { Store, MapPin, Phone, Hash, Save, Edit3, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import LoadingScreen from './LoadingScreen'
 
+
 const DairyDetails = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);

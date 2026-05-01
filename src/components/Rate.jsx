@@ -6,6 +6,7 @@ import { Edit3, Save, X, Trash2, AlertTriangle, Droplets, FlaskConical, ArrowDow
 import { toast } from 'react-toastify';
 import LoadingScreen from './LoadingScreen'
 
+
 const Rate = () => {
   const { user } = useAuth();
   const [data, setData] = useState(null);

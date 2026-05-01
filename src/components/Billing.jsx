@@ -4,6 +4,7 @@ import { collection, query, where, getDocs, doc, orderBy } from 'firebase/firest
 import { useAuth } from '../context/AuthContext';
 import { Printer, Search, Loader2, Landmark, Smartphone } from 'lucide-react';
 
+
 const Billing = () => {
   // 1. Get dairy from auth context as requested
   const { user,dairyDetails } = useAuth();

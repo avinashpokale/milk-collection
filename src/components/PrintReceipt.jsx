@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 
+
 // Move the styles here so they are central
 export const thermalStyles = `
   @media print {
